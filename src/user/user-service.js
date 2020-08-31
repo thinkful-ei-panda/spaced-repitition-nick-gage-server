@@ -65,8 +65,8 @@ const UserService = {
         ['función', 'function', 6],
         ['desarrollo', 'development', 7],
         ['coding', 'codificación', 8],
-        ['assignment', 'asignación', 7],
-        ['module', 'módulo', 8],
+        ['assignment', 'asignación', 9],
+        ['module', 'módulo', 10],
         ['integration', 'integración', null],
       ];
 
