@@ -23,6 +23,7 @@ const LanguageService = {
         'translation',
         'next',
         'memory_value',
+        'in_row',
         'correct_count',
         'incorrect_count',
       )
