@@ -28,6 +28,7 @@ languageRouter
 languageRouter
   .get('/', async (req, res, next) => {
     try {
+      console.log(req.language);
       const words = await LanguageService.getLanguageWords(
         req.app.get('db'),
         req.language.id,
