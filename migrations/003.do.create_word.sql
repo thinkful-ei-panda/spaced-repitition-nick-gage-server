@@ -1,3 +1,9 @@
+-- postgres=# create database dbname with template=template0
+-- encoding='utf8'
+-- lc_collate='es_ES.UTF-8'
+-- lc_ctype='es_ES.UTF-8' 
+-- owner=postgres;
+
 CREATE TABLE "word" (
   "id" SERIAL PRIMARY KEY,
   "original" TEXT NOT NULL,
