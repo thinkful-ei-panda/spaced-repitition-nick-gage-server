@@ -181,10 +181,10 @@ describe('User Endpoints', function () {
             { original: 'lazo', translation: 'loop' },
             { original: 'función', translation: 'function' },
             { original: 'desarrollo', translation: 'development' },
-            { original: 'coding', translation: 'codificación' },
-            { original: 'assignment', translation: 'asignación' },
-            { original: 'module', translation: 'módulo' },
-            { original: 'integration', translation: 'integración' },
+            { original: 'codificación' , translation: 'coding' },
+            { original: 'asignación' ,translation:'assignment'  },
+            { original: 'módulo', translation: 'module'  },
+            { original: 'integración' , translation:'integration' },
           ]
         };
         return supertest(app)

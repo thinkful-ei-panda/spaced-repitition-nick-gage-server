@@ -27,10 +27,10 @@ VALUES
   (4, 1, 'lazo', 'loop', 5),
   (5, 1, 'función', 'function', 6),
   (6, 1, 'desarrollo', 'development', 7),
-  (7, 1, 'coding', 'codificación', 8),
-  (8, 1, 'assignment', 'asignación', 9),
-  (9, 1, 'module', 'módulo', 10),
-  (10, 1, 'integration', 'integración', null);
+  (7, 1, 'codificación','coding', 8),
+  (8, 1, 'asignación','assignment', 9),
+  (9, 1, 'módulo', 'module', 10),
+  (10, 1,'integración', 'integration', null);
 
 UPDATE "language" SET head = 1 WHERE id = 1;
 

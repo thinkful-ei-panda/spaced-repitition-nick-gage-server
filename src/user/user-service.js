@@ -64,10 +64,10 @@ const UserService = {
         ['lazo', 'loop', 5],
         ['función', 'function', 6],
         ['desarrollo', 'development', 7],
-        ['coding', 'codificación', 8],
-        ['assignment', 'asignación', 9],
-        ['module', 'módulo', 10],
-        ['integration', 'integración', null],
+        ['codificación','coding', 8],
+        ['asignación','assignment',  9],
+        ['módulo', 'module',  10],
+        ['integración', 'integration',  null],
       ];
 
       const [languageHeadId] = await trx
