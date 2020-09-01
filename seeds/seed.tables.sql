@@ -28,7 +28,7 @@ VALUES
   (5, 1, 'funcion', 'function', 6),
   (6, 1, 'desarrollo', 'development', 7),
   (7, 1, 'codificacion','coding', 8),
-  (8, 1, 'asignación','assignment', 9),
+  (8, 1, 'asignacion','assignment', 9),
   (9, 1, 'modulo', 'module', 10),
   (10, 1,'integracion', 'integration', null);
 
