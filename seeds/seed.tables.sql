@@ -22,15 +22,15 @@ VALUES
 INSERT INTO "word" ("id", "language_id", "original", "translation", "next")
 VALUES
   (1, 1, 'algoritmo', 'algorithm', 2),
-  (2, 1, 'formación', 'array', 3),
-  (3, 1, 'núcleo', 'kernel', 4),
+  (2, 1, 'formacion', 'array', 3),
+  (3, 1, 'nucleo', 'kernel', 4),
   (4, 1, 'lazo', 'loop', 5),
-  (5, 1, 'función', 'function', 6),
+  (5, 1, 'funcion', 'function', 6),
   (6, 1, 'desarrollo', 'development', 7),
-  (7, 1, 'codificación','coding', 8),
+  (7, 1, 'codificacion','coding', 8),
   (8, 1, 'asignación','assignment', 9),
-  (9, 1, 'módulo', 'module', 10),
-  (10, 1,'integración', 'integration', null);
+  (9, 1, 'modulo', 'module', 10),
+  (10, 1,'integracion', 'integration', null);
 
 UPDATE "language" SET head = 1 WHERE id = 1;
 
