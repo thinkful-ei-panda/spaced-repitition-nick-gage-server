@@ -46,7 +46,9 @@ languageRouter
 
 languageRouter
   .get('/head', async (req, res, next) => {
-    // implement me
+    /**
+    *@TODO {try getNextInfo function in language-service}
+    */
     res.send('implement me!');
   });
 

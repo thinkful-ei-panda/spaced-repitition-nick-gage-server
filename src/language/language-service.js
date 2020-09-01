@@ -29,6 +29,24 @@ const LanguageService = {
       )
       .where({ language_id });
   },
+  getNextInfo(db, next) {
+    return db
+      .select(
+        'word.*',
+        db.raw(
+          `json_strip_nulls(
+            json_build_object(
+              'total_score', language.total_score
+            )
+          ) AS lang`
+        ),
+      )
+      .from('word')
+      .where('id', next)
+      .leftJoin('language', 'word.language_id', 'language.id')
+      .groupBy('language.id', 'word.id')
+      .first();
+  },
 };
 
 module.exports = LanguageService;
