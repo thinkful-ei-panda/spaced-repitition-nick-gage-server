@@ -2,6 +2,7 @@ const express = require('express');
 const LanguageService = require('./language-service');
 const { requireAuth } = require('../middleware/jwt-auth');
 
+const jsonBodyParser = express.json();
 const languageRouter = express.Router();
 
 languageRouter
@@ -45,11 +46,30 @@ languageRouter
   });
 
 languageRouter
-  .get('/head', async (req, res, next) => {
-    /**
-    *@TODO {try getNextInfo function in language-service}
-    */
-    res.send('implement me!');
+  .get('/head', jsonBodyParser, async (req, res, next) => {
+    try {
+      const { next_id } = req.body;
+
+      const nextWord = await LanguageService.getNextInfo(
+        req.app.get('db'),
+        next_id
+      );
+
+      const wordObj = {
+        nextWord: nextWord.original,
+        totalScore: nextWord.lang.total_score,
+        wordCorrectCount: nextWord.correct_count,
+        wordIncorrectCount: nextWord.incorrect_count,
+      };
+
+      res
+        .status(200)
+        .json(wordObj);
+
+      next();
+    } catch (error) {
+      next(error);
+    }
   });
 
 languageRouter

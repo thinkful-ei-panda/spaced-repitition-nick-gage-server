@@ -42,7 +42,7 @@ const LanguageService = {
         ),
       )
       .from('word')
-      .where('id', next)
+      .where('word.id', next)
       .leftJoin('language', 'word.language_id', 'language.id')
       .groupBy('language.id', 'word.id')
       .first();
