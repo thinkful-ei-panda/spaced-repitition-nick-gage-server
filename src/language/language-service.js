@@ -29,25 +29,24 @@ const LanguageService = {
       )
       .where({ language_id });
   },
-  getNextInfo(db, next) {
-    return db
-      .select(
-        'word.*',
-        db.raw(
-          `json_strip_nulls(
-            json_build_object(
-              'total_score', language.total_score ,
-              'name', language.name
-            )
-          ) AS lang`
-        ),
-      )
+  populateLinkedList(db , language_id, linkedList){
+    const a = db
       .from('word')
-      .where('word.id', next)
-      .leftJoin('language', 'word.language_id', 'language.id')
-      .groupBy('language.id', 'word.id')
-      .first();
-  },
+      .select(
+        'id',
+        'language_id',
+        'original',
+        'translation',
+        'next',
+        'memory_value',
+        'correct_count',
+        'incorrect_count'
+      )
+      .where({language_id});
+    a.map(word => linkedList.insert(word));
+    return a;
+
+  }
 };
 
 module.exports = LanguageService;

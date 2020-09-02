@@ -45,21 +45,17 @@ languageRouter
   });
 
 languageRouter
-  .get('/head/:next_id', jsonBodyParser, async (req, res, next) => {
-    try {
-      const { next_id } = req.params;
-
-      
-      const nextWord = await LanguageService.getNextInfo(
+  .get('/head', jsonBodyParser, async (req, res, next) => {
+    try {      
+      const words = await LanguageService.getLanguageWords(
         req.app.get('db'),
-        next_id
+        req.language.id
       );
-      
-
-      console.log(nextWord);
+      const firstWord = words[0];
+      console.log(words);
       res
         .status(200)
-        .json(nextWord);
+        .json(firstWord);
 
       next();
     } catch (error) {
@@ -68,9 +64,10 @@ languageRouter
   });
 
 languageRouter
-  .post('/guess', async (req, res, next) => {
-    // implement me
-    res.send('implement me!');
+  .post('/guess', jsonBodyParser ,async  (req, res, next) => {
+  
+
+    res.status(202).send('implement me!');
   });
 
 module.exports = languageRouter;
