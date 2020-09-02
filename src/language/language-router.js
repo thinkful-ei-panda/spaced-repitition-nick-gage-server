@@ -46,9 +46,9 @@ languageRouter
   });
 
 languageRouter
-  .get('/head', jsonBodyParser, async (req, res, next) => {
+  .get('/head/:next_id', jsonBodyParser, async (req, res, next) => {
     try {
-      const { next_id } = req.body;
+      const { next_id } = req.params;
 
       const nextWord = await LanguageService.getNextInfo(
         req.app.get('db'),
