@@ -55,14 +55,13 @@ languageRouter
       const firstWord = words[0];
 
       const resObj = {
-        nextWord : firstWord.next ,
+        nextWord : firstWord.original ,
         totalScore : 0,
         wordCorrectCount : 0,
         wordIncorrectCount : 0,
       };
 
 
-      console.log(resObj);
       res
         .status(200)
         .json(resObj);
@@ -87,31 +86,35 @@ languageRouter
       );
 
       wordsList.map(word => linkedList.insertLast(word));  
-
-      console.log( linkedList.head.value);
-      
-      
-
+            
       await LanguageService.ifIsCorrect(
         req.app.get('db'),
         (linkedList.head.value.translation === guess),
         linkedList.head.value.id
       );
 
+      const resObj = {
+        nextWord : linkedList.head.value.original ,
+        wordCorrectCount : linkedList.head.value.correct_count ,
+        wordIncorrectCount : linkedList.head.value.incorrect_count ,
+        totalScore : linkedList.head.value.memory_value ,
+        answer :  linkedList.head.value.translation ,
+        isCorrect : (linkedList.head.value.translation === guess) 
+      };
+      
 
 
-      /**
-       * {
-       * "nextWord": "test-next-word-from-generic-guess",
-       * "wordCorrectCount": 777,
-       * "wordIncorrectCount": 777,
-       * "totalScore": 777,
-       * "answer": "test-answer-from-generic-guess",
-       * "isCorrect": true
-      *}
+
+      /*
+       "nextWord": "test-next-word-from-generic-guess",
+       "wordCorrectCount": 777,
+       "wordIncorrectCount": 777,
+       "totalScore": 777,
+       "answer": "test-answer-from-generic-guess",
+       "isCorrect": true
        */
 
-      res.status(200).json(linkedList);
+      res.status(200).json(resObj);
 
       next();
     }catch (e){
