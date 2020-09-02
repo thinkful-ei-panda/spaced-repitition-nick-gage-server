@@ -29,8 +29,8 @@ const LanguageService = {
       )
       .where({ language_id });
   },
-  populateLinkedList(db , language_id, linkedList){
-    const a = db
+  populateLinkedList(db , language_id){
+    return db
       .from('word')
       .select(
         'id',
@@ -43,8 +43,20 @@ const LanguageService = {
         'incorrect_count'
       )
       .where({language_id});
-    a.map(word => linkedList.insert(word));
-    return a;
+  },
+  ifIsCorrect(db,bool,id){
+    if(bool){
+      return db
+        .from('word')
+        .increment('correct_count')
+        .where({id});
+    }
+    else {
+      return db
+        .from('word')
+        .increment('incorrect_count')
+        .where({id}); 
+    }
 
   }
 };
