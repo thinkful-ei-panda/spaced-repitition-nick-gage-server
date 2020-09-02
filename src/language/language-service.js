@@ -36,7 +36,8 @@ const LanguageService = {
         db.raw(
           `json_strip_nulls(
             json_build_object(
-              'total_score', language.total_score
+              'total_score', language.total_score ,
+              'name', language.name
             )
           ) AS lang`
         ),

@@ -29,7 +29,6 @@ languageRouter
 languageRouter
   .get('/', async (req, res, next) => {
     try {
-      console.log(req.language);
       const words = await LanguageService.getLanguageWords(
         req.app.get('db'),
         req.language.id,
@@ -50,21 +49,17 @@ languageRouter
     try {
       const { next_id } = req.params;
 
+      
       const nextWord = await LanguageService.getNextInfo(
         req.app.get('db'),
         next_id
       );
+      
 
-      const wordObj = {
-        nextWord: nextWord.original,
-        totalScore: nextWord.lang.total_score,
-        wordCorrectCount: nextWord.correct_count,
-        wordIncorrectCount: nextWord.incorrect_count,
-      };
-
+      console.log(nextWord);
       res
         .status(200)
-        .json(wordObj);
+        .json(nextWord);
 
       next();
     } catch (error) {
