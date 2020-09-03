@@ -48,17 +48,16 @@ languageRouter
 languageRouter
   .get('/head', jsonBodyParser, async (req, res, next) => {
     try {
-      const words = await LanguageService.getLanguageWords(
+      const word = await LanguageService.getNextWord(
         req.app.get('db'),
-        req.language.id
+        req.user.id
       );
-      const firstWord = words[0];
 
       const resObj = {
-        nextWord: firstWord.original,
-        totalScore: 0,
-        wordCorrectCount: 0,
-        wordIncorrectCount: 0,
+        nextWord: word.original,
+        totalScore: word.total_score,
+        wordCorrectCount: word.correct_count,
+        wordIncorrectCount: word.incorrect_count,
       };
 
       res
