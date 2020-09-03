@@ -1,3 +1,6 @@
+const LinkedList = require('../middleware/linkedList');
+
+
 const LanguageService = {
   getUsersLanguage(db, user_id) {
     return db
@@ -29,8 +32,8 @@ const LanguageService = {
       )
       .where({ language_id });
   },
-  populateLinkedList(db, language_id) {
-    return db
+  async populateLinkedList(db, language_id,head) {
+    let wordArr = await db
       .from('word')
       .select(
         'id',
@@ -43,22 +46,60 @@ const LanguageService = {
         'incorrect_count'
       )
       .where({ language_id });
+      
+    const linkedList = new LinkedList; 
+
+    let walk = wordArr.find(word => word.id === head);
+    
+    while(walk){
+      linkedList.insertLast(walk);
+      walk = wordArr.find(word => word.id === walk.next);
+    } 
+
+    return linkedList;
+
   },
-  ifIsCorrect(db, bool, id) {
-    //linkedList.head.iscorrect ++
-    if (bool) {
-      return db
+  async updateWithLinkedList(db,linkedList){
+    //go tough linked list, for  each id, update that of to that id, in db. to updated next to match the next in the linkedList
+    
+    let pointer = linkedList.head;
+
+    while(pointer){
+      await db
         .from('word')
-        .increment('correct_count')
-        .where({ id });
+        .update({
+          'next' : pointer.next.id
+        })
+        .where({'id' : pointer.id});
+
+      pointer = pointer.next;
     }
-    else {
-      return db
-        .from('word')
-        .increment('incorrect_count')
-        .where({ id });
-    }
-  }
+  },
+  updateCorrect(db, id, correct_count){
+    return db
+      .from('word')
+      .where({id})
+      .update({correct_count});
+  },
+  updateIncorrect(db, id, incorrect_count){
+    return db
+      .from('word')
+      .where({id})
+      .update({incorrect_count});
+  },
+  updateTotalScore(db, id, total_score){
+    return db
+      .from('language')
+      .where({id})
+      .update({total_score});
+  },
+  updateHead(db, id, head){
+    return db
+      .from('language')
+      .where({id})
+      .update({head});
+  },
+
 };
 
 module.exports = LanguageService;

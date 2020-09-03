@@ -49,13 +49,10 @@ class LinkedList {
       key = key.value;
     }
   
-    if(this.head.value === key){
-      this.insertFirst(key);
-    }
-  
-    if(this.head === null){
+    if(this.head === key ||this.head === null ){
       this.insertFirst(item);
-    }else{
+    }
+    else{
       let currNode = this.find(key);
   
       if(currNode === null ){

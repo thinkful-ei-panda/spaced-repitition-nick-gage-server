@@ -74,7 +74,31 @@ languageRouter
 
 languageRouter
   .post('/guess', jsonBodyParser, async (req, res, next) => {
+
     try {
+      
+      /**
+       * 1:) getting the content from the database
+       * 
+       * 2:) find out what the correct head is
+       * 
+       * 3:) -----get the guess into-----
+       * 
+       * 4:) -----error check _guess_ to see if(!guess)-----
+       * 
+       * 5:) -----compare _guess_ to the translated word of the current head.value-----
+       * 
+       * 6:) if correct ++ _correctCount_ && _totalScore_
+       *        else
+       *        ++ _incorrectCount_ 
+       * 
+       * 7:) head = head.next (how)
+       *   
+       * 8:) build response object 
+       * 
+       * 9:) then send?
+       * 
+       */
 
       const { guess } = req.body;
 
@@ -83,46 +107,70 @@ languageRouter
           .status(400).json({ error: 'Missing \'guess\' in request body' });
       }
 
-      const linkedList = new LinkedList;
-
+      
       const wordsList = await LanguageService.populateLinkedList(
         req.app.get('db'),
         req.language.id,
-      );
+        req.language.head
+      );        
 
-      wordsList.map(word => linkedList.insertLast(word));
+      if( wordsList.head.value.translation.toLowerCase() === guess.toLowerCase() ){
+        req.language.total_score++;
+        wordsList.head.value.correct_count++;
+        wordsList.head.value.memory_value *= 2; 
+        LanguageService.updateCorrect(
+          req.app.get('db'),
+          wordsList.head.value.id,
+          wordsList.head.value.correct_count
+        );
+      }
+      else{
+        wordsList.head.value.incorrect_count++;
+        wordsList.head.value.memory_value = 1;
+        LanguageService.updateIncorrect(
+          req.app.get('db'),
+          wordsList.head.value.id,
+          wordsList.head.value.incorrect_count
+        );
+      }
 
-      linkedList.head.iscorrect++;
+      const movingBack = wordsList.head.value;
 
-      console.log(linkedList);
+      wordsList.head = wordsList.head.next;
 
-      await LanguageService.ifIsCorrect(
+      wordsList.insertAt(movingBack.memory_value - 1, movingBack);
+
+      if(wordsList.head.value !== null){
+        req.language.head = wordsList.head.value.id; 
+      }
+      else{
+        req.language.head = 1;
+      }
+
+      LanguageService.updateHead(
         req.app.get('db'),
-        (wordsList[0].translation === guess),
-        wordsList[0].id
+        req.language.id,
+        req.language.head
       );
 
+      LanguageService.updateWithLinkedList(
+        req.app.get('db'),
+        wordsList
+      );
+      
       const resObj = {
-        nextWord: linkedList.head.next.value.original,
-        wordCorrectCount: linkedList.head.value.correct_count,
-        wordIncorrectCount: linkedList.head.value.incorrect_count,
+        nextWord:  wordsList.head.value.original,
+        wordCorrectCount:  wordsList.head.value.correct_count,
+        wordIncorrectCount: wordsList.head.value.incorrect_count ,
         totalScore: req.language.total_score,
-        answer: linkedList.head.value.translation,
-        isCorrect: (linkedList.head.value.translation === guess)
+        answer: wordsList.head.value.translation ,
+        isCorrect: (wordsList.head.value.translation === guess),
       };
-
-      /*
-       "nextWord": "test-next-word-from-generic-guess",
-       "wordCorrectCount": 777,
-       "wordIncorrectCount": 777,
-       "totalScore": 777,
-       "answer": "test-answer-from-generic-guess",
-       "isCorrect": true
-       */
 
       res.status(200).json(resObj);
 
       next();
+
     } catch (e) {
       next(e);
     }
