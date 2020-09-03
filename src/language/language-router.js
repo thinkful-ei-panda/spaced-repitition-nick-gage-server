@@ -76,7 +76,7 @@ languageRouter
   .post('/guess', jsonBodyParser, async (req, res, next) => {
 
     try {
-      
+
       /**
        * 1:) getting the content from the database
        * 
@@ -107,24 +107,24 @@ languageRouter
           .status(400).json({ error: 'Missing \'guess\' in request body' });
       }
 
-      
+
       const wordsList = await LanguageService.populateLinkedList(
         req.app.get('db'),
         req.language.id,
         req.language.head
-      );        
+      );
 
-      if( wordsList.head.value.translation.toLowerCase() === guess.toLowerCase() ){
+      if (wordsList.head.value.translation.toLowerCase() === guess.toLowerCase()) {
         req.language.total_score++;
         wordsList.head.value.correct_count++;
-        wordsList.head.value.memory_value *= 2; 
+        wordsList.head.value.memory_value *= 2;
         LanguageService.updateCorrect(
           req.app.get('db'),
           wordsList.head.value.id,
           wordsList.head.value.correct_count
         );
       }
-      else{
+      else {
         wordsList.head.value.incorrect_count++;
         wordsList.head.value.memory_value = 1;
         LanguageService.updateIncorrect(
@@ -140,10 +140,10 @@ languageRouter
 
       wordsList.insertAt(movingBack.memory_value - 1, movingBack);
 
-      if(wordsList.head.value !== null){
-        req.language.head = wordsList.head.value.id; 
+      if (wordsList.head.value !== null) {
+        req.language.head = wordsList.head.value.id;
       }
-      else{
+      else {
         req.language.head = 1;
       }
 
@@ -157,13 +157,13 @@ languageRouter
         req.app.get('db'),
         wordsList
       );
-      
+
       const resObj = {
-        nextWord:  wordsList.head.value.original,
-        wordCorrectCount:  wordsList.head.value.correct_count,
-        wordIncorrectCount: wordsList.head.value.incorrect_count ,
+        nextWord: wordsList.head.value.original,
+        wordCorrectCount: wordsList.head.value.correct_count,
+        wordIncorrectCount: wordsList.head.value.incorrect_count,
         totalScore: req.language.total_score,
-        answer: wordsList.head.value.translation ,
+        answer: wordsList.head.value.translation,
         isCorrect: (wordsList.head.value.translation === guess),
       };
 
