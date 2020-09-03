@@ -47,7 +47,7 @@ languageRouter
 
 languageRouter
   .get('/head', jsonBodyParser, async (req, res, next) => {
-    try {      
+    try {
       const words = await LanguageService.getLanguageWords(
         req.app.get('db'),
         req.language.id
@@ -55,10 +55,10 @@ languageRouter
       const firstWord = words[0];
 
       const resObj = {
-        nextWord : firstWord.original ,
-        totalScore : 0,
-        wordCorrectCount : 0,
-        wordIncorrectCount : 0,
+        nextWord: firstWord.original,
+        totalScore: 0,
+        wordCorrectCount: 0,
+        wordIncorrectCount: 0,
       };
 
 
@@ -73,37 +73,43 @@ languageRouter
   });
 
 languageRouter
-  .post('/guess', jsonBodyParser ,async  (req, res, next) => {
-    try{
-      
-      const {guess} = req.body;
-      
+  .post('/guess', jsonBodyParser, async (req, res, next) => {
+    try {
+
+      const { guess } = req.body;
+
+      if (!guess) {
+        return res
+          .status(400).json({ error: 'Missing \'guess\' in request body' });
+      }
+
       const linkedList = new LinkedList;
-      
+
       const wordsList = await LanguageService.populateLinkedList(
         req.app.get('db'),
         req.language.id,
       );
 
-      wordsList.map(word => linkedList.insertLast(word));  
-            
+      wordsList.map(word => linkedList.insertLast(word));
+
+      linkedList.head.iscorrect++;
+
+      console.log(linkedList);
+
       await LanguageService.ifIsCorrect(
         req.app.get('db'),
-        (linkedList.head.value.translation === guess),
-        linkedList.head.value.id
+        (wordsList[0].translation === guess),
+        wordsList[0].id
       );
 
       const resObj = {
-        nextWord : linkedList.head.value.original ,
-        wordCorrectCount : linkedList.head.value.correct_count ,
-        wordIncorrectCount : linkedList.head.value.incorrect_count ,
-        totalScore : linkedList.head.value.memory_value ,
-        answer :  linkedList.head.value.translation ,
-        isCorrect : (linkedList.head.value.translation === guess) 
+        nextWord: linkedList.head.next.value.original,
+        wordCorrectCount: linkedList.head.value.correct_count,
+        wordIncorrectCount: linkedList.head.value.incorrect_count,
+        totalScore: req.language.total_score,
+        answer: linkedList.head.value.translation,
+        isCorrect: (linkedList.head.value.translation === guess)
       };
-      
-
-
 
       /*
        "nextWord": "test-next-word-from-generic-guess",
@@ -117,7 +123,7 @@ languageRouter
       res.status(200).json(resObj);
 
       next();
-    }catch (e){
+    } catch (e) {
       next(e);
     }
   });

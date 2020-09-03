@@ -29,7 +29,7 @@ const LanguageService = {
       )
       .where({ language_id });
   },
-  populateLinkedList(db , language_id){
+  populateLinkedList(db, language_id) {
     return db
       .from('word')
       .select(
@@ -42,20 +42,21 @@ const LanguageService = {
         'correct_count',
         'incorrect_count'
       )
-      .where({language_id});
+      .where({ language_id });
   },
-  ifIsCorrect(db,bool,id){
-    if(bool){
+  ifIsCorrect(db, bool, id) {
+    //linkedList.head.iscorrect ++
+    if (bool) {
       return db
         .from('word')
         .increment('correct_count')
-        .where({id});
+        .where({ id });
     }
     else {
       return db
         .from('word')
         .increment('incorrect_count')
-        .where({id}); 
+        .where({ id });
     }
   }
 };
