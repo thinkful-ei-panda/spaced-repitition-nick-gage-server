@@ -57,7 +57,6 @@ const LanguageService = {
         .increment('incorrect_count')
         .where({id}); 
     }
-
   }
 };
 
