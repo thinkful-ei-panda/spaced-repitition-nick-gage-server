@@ -61,7 +61,6 @@ languageRouter
         wordIncorrectCount: 0,
       };
 
-
       res
         .status(200)
         .json(resObj);
@@ -74,103 +73,66 @@ languageRouter
 
 languageRouter
   .post('/guess', jsonBodyParser, async (req, res, next) => {
+    const { guess } = req.body;
+    let language = req.language;
+
+    if (!guess) {
+      return res
+        .status(400).json({ error: 'Missing \'guess\' in request body' });
+    }
 
     try {
-
-      /**
-       * 1:) getting the content from the database
-       * 
-       * 2:) find out what the correct head is
-       * 
-       * 3:) -----get the guess into-----
-       * 
-       * 4:) -----error check _guess_ to see if(!guess)-----
-       * 
-       * 5:) -----compare _guess_ to the translated word of the current head.value-----
-       * 
-       * 6:) if correct ++ _correctCount_ && _totalScore_
-       *        else
-       *        ++ _incorrectCount_ 
-       * 
-       * 7:) head = head.next (how)
-       *   
-       * 8:) build response object 
-       * 
-       * 9:) then send?
-       * 
-       */
-
-      const { guess } = req.body;
-
-      if (!guess) {
-        return res
-          .status(400).json({ error: 'Missing \'guess\' in request body' });
-      }
-
-
-      const wordsList = await LanguageService.populateLinkedList(
+      const words = await LanguageService.getLanguageWords(
         req.app.get('db'),
-        req.language.id,
-        req.language.head
+        language.id
       );
 
-      if (wordsList.head.value.translation.toLowerCase() === guess.toLowerCase()) {
-        req.language.total_score++;
-        wordsList.head.value.correct_count++;
-        wordsList.head.value.memory_value *= 2;
-        LanguageService.updateCorrect(
-          req.app.get('db'),
-          wordsList.head.value.id,
-          wordsList.head.value.correct_count
-        );
-      }
-      else {
-        wordsList.head.value.incorrect_count++;
-        wordsList.head.value.memory_value = 1;
-        LanguageService.updateIncorrect(
-          req.app.get('db'),
-          wordsList.head.value.id,
-          wordsList.head.value.incorrect_count
-        );
-      }
+      const ll = await LanguageService.populateLinkedList(words);
 
-      const movingBack = wordsList.head.value;
+      let isCorrect;
+      let prevHead = ll.head.value;
+      let newNode = prevHead;
 
-      wordsList.head = wordsList.head.next;
+      if (newNode.translation === guess) {
+        isCorrect = true;
+        language.total_score++;
+        newNode.correct_count++;
 
-      wordsList.insertAt(movingBack.memory_value - 1, movingBack);
-
-      if (wordsList.head.value !== null) {
-        req.language.head = wordsList.head.value.id;
-      }
-      else {
-        req.language.head = 1;
+        let mem_val = newNode.memory_value * 2;
+        newNode.memory_value = Math.min(mem_val, words.length);
+      } else {
+        isCorrect = false;
+        newNode.incorrect_count++;
+        newNode.memory_value = 1;
       }
 
-      LanguageService.updateHead(
+      ll.remove(prevHead);
+      ll.insertAt(newNode.memory_value, newNode);
+
+      language.head = ll.head.value.id;
+
+      await LanguageService.updateDb(
         req.app.get('db'),
-        req.language.id,
-        req.language.head
+        language,
+        ll,
+        req.user.id
       );
 
-      LanguageService.updateWithLinkedList(
+      let nextWord = await LanguageService.getNextWord(
         req.app.get('db'),
-        wordsList
+        req.user.id
       );
 
       const resObj = {
-        nextWord: wordsList.head.value.original,
-        wordCorrectCount: wordsList.head.value.correct_count,
-        wordIncorrectCount: wordsList.head.value.incorrect_count,
-        totalScore: req.language.total_score,
-        answer: wordsList.head.value.translation,
-        isCorrect: (wordsList.head.value.translation === guess),
+        nextWord: nextWord.original,
+        totalScore: nextWord.total_score,
+        wordCorrectCount: nextWord.correct_count,
+        wordIncorrectCount: nextWord.incorrect_count,
+        answer: prevHead.translation,
+        isCorrect
       };
 
-      res.status(200).json(resObj);
-
-      next();
-
+      res.json(resObj);
     } catch (e) {
       next(e);
     }
