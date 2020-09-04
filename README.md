@@ -1,52 +1,36 @@
-# Spaced repetition API!
+# API Endpoints for Coificacion:
+An application to teach the user programming terms in Spanish using spaced repetition.
 
-## Local dev setup
+## Users Endpoints
+POST /api/users Creates an account
 
-If using user `dunder-mifflin`:
+### Auth Endpoints
+POST /api/auth/token Retrieves a JWT token
 
-```bash
-mv example.env .env
-createdb -U dunder-mifflin spaced-repetition
-createdb -U dunder-mifflin spaced-repetition-test
-```
+### Language Endpoints
+GET /api/language Gets all words for specific language
 
-If your `dunder-mifflin` user has a password be sure to set it in `.env` for all appropriate fields. Or if using a different user, update appropriately.
+GET /api/language/head Gets the current word in the users list
 
-```bash
-npm install
-npm run migrate
-env MIGRATION_DB_NAME=spaced-repetition-test npm run migrate
-```
+POST /api/language/guess Submits a users guess
 
-And `npm test` should work at this point
+### User Endpoints
+POST /api/user Follows an idea
 
-## Configuring Postgres
+## Technology
+- Express.js
+- Node.js
+- Heroku
 
-For tests involving time to run properly, configure your Postgres database to run in the UTC timezone.
+### Database
+- PostgreSQL
+- postgrator
+- knex
 
-1. Locate the `postgresql.conf` file for your Postgres installation.
-   1. E.g. for an OS X, Homebrew install: `/usr/local/var/postgres/postgresql.conf`
-   2. E.g. on Windows, _maybe_: `C:\Program Files\PostgreSQL\11.2\data\postgresql.conf`
-   3. E.g  on Ubuntu 18.04 probably: '/etc/postgresql/10/main/postgresql.conf'
-2. Find the `timezone` line and set it to `UTC`:
+### Testing
+- supertest
+- Mocha
+- Chai
 
-```conf
-# - Locale and Formatting -
-
-datestyle = 'iso, mdy'
-#intervalstyle = 'postgres'
-timezone = 'UTC'
-#timezone_abbreviations = 'Default'     # Select the set of available time zone
-```
-
-## Scripts
-
-Start the application `npm start`
-
-Start nodemon for the application `npm run dev`
-
-Run the tests mode `npm test`
-
-Run the migrations up `npm run migrate`
-
-Run the migrations down `npm run migrate -- 0`
+### Misc
+- bcryptjs
