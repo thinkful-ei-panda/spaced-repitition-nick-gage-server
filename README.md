@@ -34,3 +34,7 @@ POST /api/user Follows an idea
 
 ### Misc
 - bcryptjs
+
+## Authors
+- Gage Migan
+- Nick Thorpe 
