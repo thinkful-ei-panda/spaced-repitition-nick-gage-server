@@ -1,5 +1,4 @@
 const LinkedList = require('../middleware/linkedList');
-const { updateDb } = require('../../../../../../../../Downloads/untitled folder/language-service');
 
 const LanguageService = {
   getUsersLanguage(db, user_id) {
